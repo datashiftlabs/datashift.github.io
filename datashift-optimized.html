@@ -1,0 +1,2358 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Datashift - Deine Daten. Deine Kontrolle.</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Light Mode als Standard */
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --text-tertiary: #999999;
+            --background-primary: #ffffff;
+            --background-secondary: #f8f9fa;
+            --background-tertiary: #f0f2f5;
+            --background-card: #ffffff;
+            --accent-primary: #0066ff;
+            --accent-hover: #0052cc;
+            --accent-light: rgba(0, 102, 255, 0.15);
+            --accent-lighter: rgba(0, 102, 255, 0.08);
+            --border-light: rgba(0, 0, 0, 0.08);
+            --border-medium: rgba(0, 0, 0, 0.12);
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
+            --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.20);
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(0, 0, 0, 0.1);
+        }
+
+        /* Dark Mode Variables */
+        body.dark-mode {
+            --text-primary: #ffffff;
+            --text-secondary: #a8a8a8;
+            --text-tertiary: #6b6b6b;
+            --background-primary: #0a0a0a;
+            --background-secondary: #141414;
+            --background-tertiary: #1f1f1f;
+            --background-card: #1a1a1a;
+            --accent-primary: #4a9eff;
+            --accent-hover: #3d8ff0;
+            --accent-light: rgba(74, 158, 255, 0.15);
+            --accent-lighter: rgba(74, 158, 255, 0.08);
+            --border-light: rgba(255, 255, 255, 0.08);
+            --border-medium: rgba(255, 255, 255, 0.12);
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.6);
+            --glass-bg: rgba(20, 20, 20, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Base Styles */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+            color: var(--text-primary);
+            background-color: var(--background-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Smooth Scroll - Optimiert für bessere Performance */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Hardware Acceleration - Optimiert */
+        .accelerated {
+            transform: translateZ(0);
+            will-change: transform;
+            backface-visibility: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--background-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--background-tertiary);
+            border-radius: 6px;
+            border: 2px solid var(--background-secondary);
+            transition: background 0.3s ease;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-tertiary);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Navigation with Backdrop Filter */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: var(--glass-bg);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            z-index: 1000;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-bottom: 1px solid var(--glass-border);
+            transform: translateZ(0);
+        }
+
+        .navbar.scrolled {
+            box-shadow: var(--shadow-md);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        body.dark-mode .navbar.scrolled {
+            background: rgba(10, 10, 10, 0.95);
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 64px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            padding: 8px 0;
+            cursor: pointer;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-primary);
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .theme-toggle {
+            background: var(--background-tertiary);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            padding: 8px 16px;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--accent-primary);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            background: var(--background-primary);
+        }
+
+        /* Animated Background Pattern - Optimiert */
+        .hero-pattern {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background-image: 
+                radial-gradient(circle at 20% 80%, var(--accent-primary) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, var(--accent-primary) 0%, transparent 50%);
+            opacity: 0.03;
+            animation: patternRotate 60s linear infinite;
+            transform: scale(1.5) translateZ(0);
+            will-change: transform;
+        }
+
+        @keyframes patternRotate {
+            from { transform: rotate(0deg) scale(1.5) translateZ(0); }
+            to { transform: rotate(360deg) scale(1.5) translateZ(0); }
+        }
+
+        /* Floating Particles - Optimiert */
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--accent-primary);
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: particleFloat 20s infinite ease-in-out;
+            will-change: transform, opacity;
+        }
+
+        @keyframes particleFloat {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.5;
+            }
+            90% {
+                opacity: 0.5;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        /* Hero Content with Stagger Animation */
+        .hero-content {
+            text-align: center;
+            z-index: 10;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: clamp(48px, 8vw, 96px);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            letter-spacing: -2px;
+            color: var(--text-primary);
+            opacity: 0;
+            transform: translateY(60px);
+        }
+
+        .hero .subtitle {
+            font-size: clamp(20px, 3vw, 28px);
+            color: var(--text-secondary);
+            margin-bottom: 48px;
+            font-weight: 400;
+            line-height: 1.5;
+            opacity: 0;
+            transform: translateY(60px);
+        }
+
+        .hero-cta {
+            display: inline-block;
+            background: var(--accent-primary);
+            color: white;
+            padding: 16px 48px;
+            border-radius: 32px;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 20px rgba(74, 158, 255, 0.3);
+            opacity: 0;
+            transform: translateY(60px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-cta::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hero-cta:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .hero-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(74, 158, 255, 0.4);
+        }
+
+        /* Animated elements on load */
+        .hero.loaded h1,
+        .hero.loaded .subtitle,
+        .hero.loaded .hero-cta {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hero.loaded h1 {
+            transition-delay: 0.2s;
+        }
+
+        .hero.loaded .subtitle {
+            transition-delay: 0.4s;
+        }
+
+        .hero.loaded .hero-cta {
+            transition-delay: 0.6s;
+        }
+
+        /* Animated Scroll Indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hero.loaded .scroll-indicator {
+            opacity: 1;
+            transition-delay: 1s;
+        }
+
+        .scroll-indicator-inner {
+            width: 30px;
+            height: 50px;
+            border: 2px solid var(--text-secondary);
+            border-radius: 25px;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .scroll-indicator-inner::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            width: 4px;
+            height: 10px;
+            background: var(--text-secondary);
+            border-radius: 2px;
+            transform: translateX(-50%);
+            animation: scrollPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes scrollPulse {
+            0%, 100% {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+            50% {
+                transform: translateX(-50%) translateY(10px);
+                opacity: 0.5;
+            }
+        }
+
+        .scroll-indicator:hover .scroll-indicator-inner {
+            border-color: var(--accent-primary);
+            transform: translateY(-5px);
+        }
+
+        .scroll-indicator:hover .scroll-indicator-inner::before {
+            background: var(--accent-primary);
+        }
+
+        /* Section Styles */
+        .section {
+            padding: 120px 0;
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-content {
+            width: 100%;
+            opacity: 0;
+            transform: translateY(100px);
+        }
+
+        .section.in-view .section-content {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .section-header h2 {
+            font-size: clamp(36px, 5vw, 56px);
+            font-weight: 700;
+            margin-bottom: 24px;
+            letter-spacing: -1px;
+            color: var(--text-primary);
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        .section-header p {
+            font-size: clamp(18px, 2.5vw, 22px);
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        .section.in-view .section-header h2,
+        .section.in-view .section-header p {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .section.in-view .section-header p {
+            transition-delay: 0.2s;
+        }
+
+        /* Comparison Section */
+        .comparison-section {
+            background: var(--background-secondary);
+            border-radius: 24px;
+            padding: 60px;
+            box-shadow: var(--shadow-lg);
+            margin: 0 24px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border-light);
+            transform: translateZ(0);
+        }
+
+        /* Filter Container */
+        .filter-container {
+            margin-bottom: 48px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .search-container {
+            position: relative;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 20px 24px;
+            border: 2px solid var(--border-light);
+            border-radius: 16px;
+            font-size: 16px;
+            background: var(--background-card);
+            color: var(--text-primary);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            outline: none;
+        }
+
+        .search-input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .search-input:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 4px var(--accent-lighter);
+            background: var(--background-tertiary);
+        }
+
+        .category-filters {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .category-btn {
+            padding: 12px 24px;
+            border: 2px solid var(--border-light);
+            background: var(--background-card);
+            border-radius: 24px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-primary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--accent-primary);
+            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: -1;
+        }
+
+        .category-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--accent-primary);
+        }
+
+        .category-btn.active {
+            background: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+        }
+
+        /* View Toggle */
+        .view-toggle {
+            display: flex;
+            gap: 8px;
+            background: var(--background-card);
+            padding: 4px;
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+        }
+
+        .view-btn {
+            padding: 8px 16px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .view-btn.active {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        /* Providers Grid */
+        .providers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 32px;
+            margin-bottom: 48px;
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        .section.in-view .providers-grid {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transition-delay: 0.4s;
+        }
+
+        .provider-card {
+            background: var(--background-card);
+            border: 2px solid var(--border-light);
+            border-radius: 20px;
+            padding: 32px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(30px) scale(0.98);
+        }
+
+        .provider-card.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .provider-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--border-medium);
+        }
+
+        .provider-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent-primary);
+        }
+
+        .provider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        .provider-name {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .provider-badge {
+            padding: 6px 16px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: var(--accent-light);
+            color: var(--accent-primary);
+            border: 1px solid var(--accent-primary);
+        }
+
+        .provider-features {
+            list-style: none;
+        }
+
+        .provider-features li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-light);
+            font-size: 15px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .provider-features li:last-child {
+            border-bottom: none;
+        }
+
+        .provider-features li:hover {
+            padding-left: 8px;
+            background: var(--background-secondary);
+            margin: 0 -8px;
+            padding-right: 16px;
+            border-radius: 8px;
+        }
+
+        .feature-label {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .feature-value {
+            color: var(--text-secondary);
+            text-align: right;
+            font-weight: 400;
+            max-width: 180px;
+        }
+
+        .price-value {
+            color: var(--accent-primary);
+            font-weight: 600;
+        }
+
+        /* Central CTA */
+        .central-cta {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid var(--border-light);
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        .section.in-view .central-cta {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transition-delay: 0.6s;
+        }
+
+        .central-cta-text {
+            font-size: 20px;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+
+        .check-offers-btn {
+            background: var(--accent-primary);
+            color: white;
+            border: none;
+            padding: 18px 48px;
+            border-radius: 32px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 20px rgba(74, 158, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .check-offers-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .check-offers-btn:hover::before {
+            width: 400px;
+            height: 400px;
+        }
+
+        .check-offers-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(74, 158, 255, 0.4);
+        }
+
+        .show-more-btn {
+            background: var(--background-tertiary);
+            border: 2px solid var(--border-medium);
+            color: var(--text-primary);
+            padding: 14px 40px;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin: 0 auto;
+            display: block;
+        }
+
+        .show-more-btn:hover {
+            background: var(--border-medium);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Benefits Section */
+        .benefits-section {
+            background: linear-gradient(135deg, var(--background-secondary) 0%, var(--background-tertiary) 100%);
+            border-radius: 32px;
+            margin: 100px 24px;
+            padding: 100px 60px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border-light);
+        }
+
+        .benefits-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 32px;
+            margin-top: 60px;
+        }
+
+        .benefit-card {
+            background: var(--background-card);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            padding: 40px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            transform: translateY(40px);
+            text-align: center;
+        }
+
+        .benefit-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--accent-primary);
+        }
+
+        .benefit-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--background-secondary);
+            border-radius: 20px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .benefit-card:hover .benefit-icon {
+            transform: scale(1.1) rotate(5deg);
+            background: var(--accent-primary);
+        }
+
+        .benefit-icon svg {
+            width: 40px;
+            height: 40px;
+            stroke: var(--accent-primary);
+            fill: none;
+            stroke-width: 2;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .benefit-card:hover .benefit-icon svg {
+            stroke: white;
+            transform: scale(1.1);
+        }
+
+        .benefit-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        .benefit-desc {
+            color: var(--text-secondary);
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        /* Process Section */
+        .process-section {
+            background: var(--background-secondary);
+            border-radius: 32px;
+            margin: 0 24px;
+            padding: 100px 60px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border-light);
+        }
+
+        .process-text {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .process-text h2 {
+            font-size: clamp(36px, 5vw, 56px);
+            font-weight: 700;
+            margin-bottom: 24px;
+            letter-spacing: -1px;
+            color: var(--text-primary);
+        }
+
+        .process-text p {
+            font-size: clamp(18px, 2.5vw, 22px);
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .process-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+            position: relative;
+        }
+
+        .step-card {
+            background: var(--background-card);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            transform: translateY(40px) scale(0.95);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border-light);
+        }
+
+        .step-card.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .step-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--accent-primary);
+        }
+
+        .step-number {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--accent-primary) 0%, #667eea 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 700;
+            margin: 0 auto 24px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 25px rgba(74, 158, 255, 0.3);
+        }
+
+        .step-card:hover .step-number {
+            transform: scale(1.1) rotate(360deg);
+        }
+
+        .step-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        .step-desc {
+            color: var(--text-secondary);
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 120px 0;
+            background: linear-gradient(135deg, var(--accent-primary) 0%, #667eea 100%);
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-content h2 {
+            font-size: clamp(36px, 5vw, 56px);
+            margin-bottom: 24px;
+            color: white;
+        }
+
+        .cta-content p {
+            font-size: 20px;
+            margin-bottom: 48px;
+            opacity: 0.9;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-primary {
+            background: white;
+            color: var(--accent-primary);
+            padding: 18px 48px;
+            border-radius: 32px;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .cta-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .cta-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+            padding: 18px 48px;
+            border-radius: 32px;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .cta-secondary:hover {
+            background: white;
+            color: var(--accent-primary);
+            transform: translateY(-3px);
+        }
+
+        /* Contact Modal */
+        .contact-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .contact-modal.visible {
+            display: flex;
+            opacity: 1;
+        }
+
+        .contact-form {
+            background: var(--background-card);
+            border: 1px solid var(--border-light);
+            border-radius: 24px;
+            padding: 48px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: var(--shadow-xl);
+            transform: scale(0.9) translateY(20px);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .contact-modal.visible .contact-form {
+            transform: scale(1) translateY(0);
+        }
+
+        .contact-form h3 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 32px;
+            color: var(--text-primary);
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            font-size: 16px;
+            background: var(--background-secondary);
+            color: var(--text-primary);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--accent-primary);
+            background: var(--background-tertiary);
+            box-shadow: 0 0 0 4px var(--accent-lighter);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: flex-end;
+            margin-top: 32px;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--border-medium);
+            color: var(--text-primary);
+            padding: 12px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .btn-secondary:hover {
+            background: var(--background-secondary);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: var(--accent-primary);
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(74, 158, 255, 0.3);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--background-secondary);
+            color: var(--text-primary);
+            padding: 80px 0 40px;
+            margin-top: 120px;
+            position: relative;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 48px;
+            margin-bottom: 48px;
+        }
+
+        .footer-section h4 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+        }
+
+        .footer-section p {
+            color: var(--text-secondary);
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .footer-section a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            display: block;
+            margin-bottom: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 16px;
+            position: relative;
+            padding-left: 0;
+        }
+
+        .footer-section a:hover {
+            color: var(--text-primary);
+            padding-left: 8px;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 48px;
+            border-top: 1px solid var(--border-light);
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Stagger Animation */
+        .stagger-animation {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        .stagger-animation.visible {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .comparison-section {
+                padding: 40px 24px;
+            }
+
+            .providers-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .benefits-section,
+            .process-section {
+                padding: 60px 24px;
+                margin: 50px 12px;
+            }
+
+            .hero h1 {
+                font-size: 48px;
+            }
+
+            .section-header h2 {
+                font-size: 36px;
+            }
+
+            .benefits-grid,
+            .process-steps {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                gap: 32px;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .cta-primary,
+            .cta-secondary {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .filter-container {
+                padding: 0 20px;
+            }
+
+            .category-filters {
+                width: 100%;
+                gap: 12px;
+            }
+
+            .category-btn {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+
+            .view-toggle {
+                display: none;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Loading State */
+        .loading {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        /* All Providers View */
+        .all-providers-grid {
+            display: none;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            margin-top: 40px;
+        }
+
+        .all-providers-grid.active {
+            display: grid;
+        }
+
+        .filter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .filter-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .filter-stats {
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-content">
+            <a href="#" class="logo">Datashift</a>
+            <ul class="nav-links">
+                <li><a onclick="scrollToSection('comparison')">Vergleich</a></li>
+                <li><a onclick="scrollToSection('benefits')">Sicherheit</a></li>
+                <li><a onclick="scrollToSection('process')">So funktioniert's</a></li>
+                <li><a onclick="openContactModal()">Kontakt</a></li>
+            </ul>
+            <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="hero-pattern accelerated"></div>
+        <!-- Floating Particles -->
+        <div class="particle" style="top: 10%; left: 10%;"></div>
+        <div class="particle" style="top: 20%; left: 80%; animation-delay: 2s;"></div>
+        <div class="particle" style="top: 60%; left: 20%; animation-delay: 4s;"></div>
+        <div class="particle" style="top: 80%; left: 90%; animation-delay: 6s;"></div>
+        <div class="particle" style="top: 40%; left: 50%; animation-delay: 8s;"></div>
+        
+        <div class="hero-content">
+            <h1>Deine Daten.<br>Deine Kontrolle.</h1>
+            <p class="subtitle">Wechsle zu europäischen Cloud-Anbietern.<br>DSGVO-konform. Sicher. Souverän.</p>
+            <a href="#comparison" class="hero-cta" onclick="scrollToSection('comparison')">Kostenvergleich starten</a>
+        </div>
+        
+        <div class="scroll-indicator" onclick="scrollToSection('comparison')">
+            <div class="scroll-indicator-inner"></div>
+        </div>
+    </section>
+
+    <!-- Comparison Section -->
+    <section id="comparison" class="section">
+        <div class="container">
+            <div class="section-content">
+                <div class="section-header">
+                    <h2>Finde deine Alternative</h2>
+                    <p>Vergleiche US-Anbieter mit sicheren europäischen Alternativen</p>
+                </div>
+
+                <div class="comparison-section">
+                    <!-- Filter Container -->
+                    <div class="filter-container">
+                        <!-- Search -->
+                        <div class="search-container">
+                            <input type="text" class="search-input" id="provider-search" 
+                                   placeholder="Nach Anbieter suchen (z.B. Gmail, Proton Mail)...">
+                        </div>
+
+                        <!-- View Toggle and Category Filters -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 20px; flex-wrap: wrap;">
+                            <!-- Category Filters -->
+                            <div class="category-filters">
+                                <button class="category-btn active" data-category="all">Alle anzeigen</button>
+                                <button class="category-btn" data-category="email">E-Mail</button>
+                                <button class="category-btn" data-category="cloud">Cloud-Speicher</button>
+                                <button class="category-btn" data-category="password">Passwort-Manager</button>
+                                <button class="category-btn" data-category="backup">Backup</button>
+                                <button class="category-btn" data-category="office">Office Suite</button>
+                                <button class="category-btn" data-category="video">Videokonferenzen</button>
+                            </div>
+
+                            <!-- View Toggle -->
+                            <div class="view-toggle">
+                                <button class="view-btn active" data-view="category">Kategorien</button>
+                                <button class="view-btn" data-view="all">Alle Anbieter</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Filter Header for All View -->
+                    <div class="filter-header hidden" id="filter-header">
+                        <h3 class="filter-title">Alle Anbieter</h3>
+                        <span class="filter-stats" id="filter-stats">0 Anbieter gefunden</span>
+                    </div>
+
+                    <!-- Providers Grid -->
+                    <div class="providers-grid" id="providers-grid">
+                        <!-- Providers will be inserted here -->
+                    </div>
+
+                    <!-- All Providers Grid -->
+                    <div class="all-providers-grid" id="all-providers-grid">
+                        <!-- All providers will be shown here -->
+                    </div>
+
+                    <!-- Show More Button -->
+                    <button class="show-more-btn hidden" id="show-more-btn">Weitere anzeigen</button>
+
+                    <!-- Central CTA -->
+                    <div class="central-cta">
+                        <p class="central-cta-text">Bereit für den Wechsel zu sicheren europäischen Alternativen?</p>
+                        <button class="check-offers-btn" onclick="checkOffers()">Jetzt Wechselangebote prüfen</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section id="benefits" class="section">
+        <div class="container">
+            <div class="section-content">
+                <div class="benefits-section">
+                    <div class="benefits-content">
+                        <div class="section-header">
+                            <h2>Warum europäische Alternativen?</h2>
+                            <p>Maximale Sicherheit und vollständige Kontrolle über deine Daten</p>
+                        </div>
+                        
+                        <div class="benefits-grid">
+                            <div class="benefit-card stagger-animation">
+                                <div class="benefit-icon">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" stroke-linejoin="round"/>
+                                        <path d="M9 12l2 2 4-4" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <h3 class="benefit-title">100% DSGVO-konform</h3>
+                                <p class="benefit-desc">Vollständiger Schutz nach europäischen Datenschutzstandards ohne Kompromisse</p>
+                            </div>
+                            <div class="benefit-card stagger-animation">
+                                <div class="benefit-icon">
+                                    <svg viewBox="0 0 24 24">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                                    </svg>
+                                </div>
+                                <h3 class="benefit-title">Server in Europa</h3>
+                                <p class="benefit-desc">Deine Daten bleiben garantiert in der EU unter europäischer Rechtsprechung</p>
+                            </div>
+                            <div class="benefit-card stagger-animation">
+                                <div class="benefit-icon">
+                                    <svg viewBox="0 0 24 24">
+                                        <rect x="3" y="11" width="18" height="10" rx="2" ry="2"/>
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4M12 17h.01"/>
+                                    </svg>
+                                </div>
+                                <h3 class="benefit-title">Ende-zu-Ende verschlüsselt</h3>
+                                <p class="benefit-desc">Modernste Verschlüsselung schützt deine Daten vor unbefugtem Zugriff</p>
+                            </div>
+                            <div class="benefit-card stagger-animation">
+                                <div class="benefit-icon">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                                    </svg>
+                                </div>
+                                <h3 class="benefit-title">Faire Preise</h3>
+                                <p class="benefit-desc">Transparente Preisgestaltung ohne versteckte Kosten oder Überraschungen</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section id="process" class="section">
+        <div class="container">
+            <div class="section-content">
+                <div class="process-section">
+                    <div class="process-text">
+                        <h2>So funktioniert der Wechsel</h2>
+                        <p>In nur 3 einfachen Schritten zu deiner digitalen Souveränität</p>
+                    </div>
+
+                    <div class="process-steps">
+                        <div class="step-card stagger-animation">
+                            <div class="step-number">1</div>
+                            <h3 class="step-title">Analyse & Beratung</h3>
+                            <p class="step-desc">Wir analysieren deine aktuellen Services und finden die perfekten EU-Alternativen für deine Bedürfnisse.</p>
+                        </div>
+                        <div class="step-card stagger-animation">
+                            <div class="step-number">2</div>
+                            <h3 class="step-title">Migration & Setup</h3>
+                            <p class="step-desc">Wir migrieren deine Daten sicher und richten die neuen Services vollständig für dich ein.</p>
+                        </div>
+                        <div class="step-card stagger-animation">
+                            <div class="step-number">3</div>
+                            <h3 class="step-title">Support & Betreuung</h3>
+                            <p class="step-desc">30 Tage kostenloser Support und Hilfe bei allen Fragen zu deinen neuen Services.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Bereit für digitale Souveränität?</h2>
+                <p>Starte jetzt deine Reise zu sicheren europäischen Cloud-Lösungen</p>
+                <div class="cta-buttons">
+                    <a href="#comparison" class="cta-primary" onclick="scrollToSection('comparison')">Jetzt vergleichen</a>
+                    <a href="#" class="cta-secondary" onclick="openContactModal()">Beratung anfordern</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Modal -->
+    <div class="contact-modal" id="contact-modal">
+        <div class="contact-form">
+            <h3>Kontakt aufnehmen</h3>
+            <form id="contact-form">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">E-Mail</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="message">Nachricht</label>
+                    <textarea id="message" name="message" required placeholder="Wie können wir Ihnen helfen?"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeContactModal()">Abbrechen</button>
+                    <button type="submit" class="btn-primary">Absenden</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Datashift</h4>
+                    <p>Deine Plattform für digitale Souveränität und sichere Cloud-Alternativen.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Services</h4>
+                    <a href="#">E-Mail Migration</a>
+                    <a href="#">Cloud-Speicher Wechsel</a>
+                    <a href="#">Passwort-Manager</a>
+                    <a href="#">Backup-Lösungen</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Rechtliches</h4>
+                    <a href="#">Datenschutz</a>
+                    <a href="#">Impressum</a>
+                    <a href="#">AGB</a>
+                    <a href="#">Widerrufsrecht</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Kontakt</h4>
+                    <a href="mailto:support@datashift.eu">support@datashift.eu</a>
+                    <a href="#">FAQ</a>
+                    <a href="#">Blog</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Datashift. Alle Rechte vorbehalten. Made with ❤️ in Europe.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Enhanced Provider data with more options
+        const providers = {
+            email: {
+                default: [
+                    {
+                        type: 'us',
+                        name: 'Gmail',
+                        badge: 'USA',
+                        category: 'email',
+                        features: [
+                            { label: 'Serverstandort', value: 'USA' },
+                            { label: 'DSGVO-konform', value: 'Begrenzt' },
+                            { label: 'Regierungszugriff', value: 'Sehr wahrscheinlich' },
+                            { label: 'Datenscannung', value: 'Für Werbung' },
+                            { label: 'Preis', value: 'ab 0 €', class: 'price-value' }
+                        ]
+                    },
+                    {
+                        type: 'eu',
+                        name: 'Proton Mail',
+                        badge: 'Schweiz',
+                        category: 'email',
+                        features: [
+                            { label: 'Serverstandort', value: 'Schweiz' },
+                            { label: 'DSGVO-konform', value: 'Vollständig' },
+                            { label: 'Regierungszugriff', value: 'Unwahrscheinlich' },
+                            { label: 'Ende-zu-Ende verschlüsselt', value: 'Ja' },
+                            { label: 'Preis', value: 'ab 0 €', class: 'price-value' }
+                        ]
+                    }
+                ],
+                additional: [
+                    {
+                        type: 'us',
+                        name: 'Outlook.com',
+                        badge: 'USA',
+                        category: 'email',
+                        features: [
+                            { label: 'Serverstandort', value: 'USA' },
+                            { label: 'DSGVO-konform', value: 'Teilweise' },
+                            { label: 'Regierungszugriff', value: 'Sehr wahrscheinlich' },
+                            { label: 'Datenscannung', value: 'Limitiert' },
+                            { label: 'Preis', value: 'ab 0 €', class: 'price-value' }
+                        ]
+                    },
+                    {
+                        type: 'eu',
+                        name: 'Tutanota',
+                        badge: 'Deutschland',
+                        category: 'email',
+                        features: [
+                            { label: 'Serverstandort', value: 'Deutschland' },
+                            { label: 'DSGVO-konform', value: 'Vollständig' },
+                            { label: 'Regierungszugriff', value: 'Unwahrscheinlich' },
+                            { label: 'Ende-zu-Ende verschlüsselt', value: 'Ja' },
+                            { label: 'Preis', value: 'ab 1 €', class: 'price-value' }
+                        ]
+                    }
+                ]
+            },
+            cloud: {
+                default: [
+                    {
+                        type: 'us',
+                        name: 'Google Drive',
+                        badge: 'USA',
+                        category: 'cloud',
+                        features: [
+                            { label: 'Serverstandort', value: 'USA' },
+                            { label: 'DSGVO-konform', value: 'Begrenzt' },
+                            { label: 'Regierungszugriff', value: 'Sehr wahrscheinlich' },
+                            { label: 'Datenscannung', value: 'Für Werbung' },
+                            { label: 'Preis', value: 'ab 0 €', class: 'price-value' }
+                        ]
+                    },
+                    {
+                        type: 'eu',
+                        name: 'Nextcloud',
+                        badge: 'Deutschland',
+                        category: 'cloud',
+                        features: [
+                            { label: 'Serverstandort', value: 'Deutschland' },
+                            { label: 'DSGVO-konform', value: 'Vollständig' },
+                            { label: 'Regierungszugriff', value: 'Unwahrscheinlich' },
+                            { label: 'Ende-zu-Ende verschlüsselt', value: 'Ja' },
+                            { label: 'Preis', value: 'ab 3 €', class: 'price-value' }
+                        ]
+                    }
+                ],
+                additional: [
+                    {
+                        type: 'us',
+                        name: 'Dropbox',
+                        badge: 'USA',
+                        category: 'cloud',
+                        features: [
+                            { label: 'Serverstandort', value: 'USA' },
+                            { label: 'DSGVO-konform', value: 'Teilweise' },
+                            { label: 'Regierungszugriff', value: 'Sehr wahrscheinlich' },
+                            { label: 'Verschlüsselung', value: 'AES 256-bit' },
+                            { label: 'Preis', value: 'ab 9,99 €', class: 'price-value' }
+                        ]
+                    },
+                    {
+                        type: 'eu',
+                        name: 'pCloud',
+                        badge: 'Schweiz',
+                        category: 'cloud',
+                        features: [
+                            { label: 'Serverstandort', value: 'Schweiz/EU' },
+                            { label: 'DSGVO-konform', value: 'Vollständig' },
+                            { label: 'Regierungszugriff', value: 'Unwahrscheinlich' },
+                            { label: 'Client-seitige Verschlüsselung', value: 'Optional' },
+                            { label: 'Preis', value: 'ab 4,99 €', class: 'price-value' }
+                        ]
+                    }
+                ]
+            },
+            password: {
+                default: [
+                    {
+                        type: 'us',
+                        name: 'LastPass',
+                        badge: 'USA',
+                        category: 'password',
+                        features: [
+                            { label: 'Serverstandort', value: 'USA' },
+                            { label: 'DSGVO-konform', value: 'Teilweise' },
+                            { label: 'Regierungszugriff', value: 'Möglich' },
+                            { label: 'Datenlecks', value: 'Mehrere bekannt' },
+                            { label: 'Preis', value: 'ab 2,90 €', class: 'price-value' }
+                        ]
+                    },
+                    {
+                        type: 'eu',
+                        name: 'Bitwarden',
+                        badge: 'EU-Hosting',
+                        category: 'password',
+                        features: [
+                            { label: 'Serverstandort', value: 'EU verfügbar' },
+                            { label: 'DSGVO-konform', value: 'Vollständig' },
+                            { label: 'Regierungszugriff', value: 'Unwahrscheinlich' },
+                            { label: 'Open Source', value: 'Ja' },
+                            { label: 'Preis', value: 'ab 0 €', class: 'price-value' }
+                        ]
+                    }
+                ],
+                additional: [
+                    {
+                        type: 'us',
+                        name: '1Password',
+                        badge: 'Kanada',
+                        category: 'password',
+                        features: [
+                            { label: 'Serverstandort', value: 'USA/Kanada' },
+                            { label: 'DSGVO-konform', value: 'Teilweise' },
+                            { label: 'Regierungszugriff', value: 'Möglich' },
+                            { label: 'Sicherheit', value: 'Sehr hoch' },
+                            { label: 'Preis', value: 'ab 2,99 €', class: 'price-value' }
+                        ]
+                    },
+                    {
+                        type: 'eu',
+                        name: 'NordPass',
+                        badge: 'Panama/EU',
+                        category: 'password',
+                        features: [
+                            { label: 'Serverstandort', value: 'EU Server' },
+                            { label: 'DSGVO-konform', value: 'Vollständig' },
+                            { label: 'Regierungszugriff', value: 'Unwahrscheinlich' },
+                            { label: 'Zero-Knowledge', value: 'Ja' },
+                            { label: 'Preis', value: 'ab 1,29 €', class: 'price-value' }
+                        ]
+                    }
+                ]
+            },
+            backup: {
+                default: [
+                    {
+                        type: 'us',
+                        name: 'Carbonite',
+                        badge: 'USA',
+                        category: 'backup',
+                        features: [
+                            { label: 'Serverstandort', value: 'USA' },
+                            { label: 'DSGVO-konform', value: 'Teilweise' },
+                            { label: 'Regierungszugriff', value: 'Sehr wahrscheinlich' },
+                            { label: 'Automatisches Backup', value: 'Ja' },
+                            { label: 'Preis', value: 'ab 5,99 €', class: 'price-value' }
+                        ]
+                    },
+                    {
+                        type: 'eu',
+                        name: 'IONOS Backup',
+                        badge: 'Deutschland',
+                        category: 'backup',
+                        features: [
+                            { label: 'Serverstandort', value: 'Deutschland' },
+                            { label: 'DSGVO-konform', value: 'Vollständig' },
+                            { label: 'Regierungszugriff', value: 'Unwahrscheinlich' },
+                            { label: 'Deutscher Support', value: 'Ja' },
+                            { label: 'Preis', value: 'ab 1 €', class: 'price-value' }
+                        ]
+                    }
+                ],
+                additional: [
+                    {
+                        type: 'us',
+                        name: 'Backblaze',
+                        badge: 'USA',
+                        category: 'backup',
+                        features: [
+                            { label: 'Serverstandort', value: 'USA' },
+                            { label: 'DSGVO-konform', value: 'Teilweise' },
+                            { label: 'Regierungszugriff', value: 'Sehr wahrscheinlich' },
+                            { label: 'Unbegrenzter Speicher', value: 'Ja' },
+                            { label: 'Preis', value: 'ab 7 €', class: 'price-value' }
+                        ]
+                    },
+                    {
+                        type: 'eu',
+                        name: 'Acronis',
+                        badge: 'Schweiz',
+                        category: 'backup',
+                        features: [
+                            { label: 'Serverstandort', value: 'Schweiz/EU' },
+                            { label: 'DSGVO-konform', value: 'Vollständig' },
+                            { label: 'Regierungszugriff', value: 'Unwahrscheinlich' },
+                            { label: 'KI-basierter Schutz', value: 'Ja' },
+                            { label: 'Preis', value: 'ab 4,99 €', class: 'price-value' }
+                        ]
+                    }
+                ]
+            },
+            office: {
+                default: [
+                    {
+                        type: 'us',
+                        name: 'Microsoft 365',
+                        badge: 'USA',
+                        category: 'office',
+                        features: [
+                            { label: 'Serverstandort', value: 'USA/Global' },
+                            { label: 'DSGVO-konform', value: 'Begrenzt' },
+                            { label: 'Regierungszugriff', value: 'Sehr wahrscheinlich' },
+                            { label: 'Telemetrie', value: 'Umfangreich' },
+                            { label: 'Preis', value: 'ab 6,99 €', class: 'price-value' }
+                        ]
+                    },
+                    {
+                        type: 'eu',
+                        name: 'OnlyOffice',
+                        badge: 'EU-Hosting',
+                        category: 'office',
+                        features: [
+                            { label: 'Serverstandort', value: 'EU wählbar' },
+                            { label: 'DSGVO-konform', value: 'Vollständig' },
+                            { label: 'Regierungszugriff', value: 'Unwahrscheinlich' },
+                            { label: 'Open Source', value: 'Ja' },
+                            { label: 'Preis', value: 'ab 0 €', class: 'price-value' }
+                        ]
+                    }
+                ],
+                additional: [
+                    {
+                        type: 'us',
+                        name: 'Google Workspace',
+                        badge: 'USA',
+                        category: 'office',
+                        features: [
+                            { label: 'Serverstandort', value: 'USA' },
+                            { label: 'DSGVO-konform', value: 'Begrenzt' },
+                            { label: 'Regierungszugriff', value: 'Sehr wahrscheinlich' },
+                            { label: 'Datenscannung', value: 'Für KI-Training' },
+                            { label: 'Preis', value: 'ab 5,75 €', class: 'price-value' }
+                        ]
+                    },
+                    {
+                        type: 'eu',
+                        name: 'Cryptpad',
+                        badge: 'Frankreich',
+                        category: 'office',
+                        features: [
+                            { label: 'Serverstandort', value: 'Frankreich/EU' },
+                            { label: 'DSGVO-konform', value: 'Vollständig' },
+                            { label: 'Regierungszugriff', value: 'Unwahrscheinlich' },
+                            { label: 'Ende-zu-Ende verschlüsselt', value: 'Ja' },
+                            { label: 'Preis', value: 'ab 0 €', class: 'price-value' }
+                        ]
+                    }
+                ]
+            },
+            video: {
+                default: [
+                    {
+                        type: 'us',
+                        name: 'Zoom',
+                        badge: 'USA',
+                        category: 'video',
+                        features: [
+                            { label: 'Serverstandort', value: 'USA/Global' },
+                            { label: 'DSGVO-konform', value: 'Teilweise' },
+                            { label: 'Regierungszugriff', value: 'Möglich' },
+                            { label: 'Ende-zu-Ende verschlüsselt', value: 'Optional' },
+                            { label: 'Preis', value: 'ab 0 €', class: 'price-value' }
+                        ]
+                    },
+                    {
+                        type: 'eu',
+                        name: 'Jitsi Meet',
+                        badge: 'EU-Hosting',
+                        category: 'video',
+                        features: [
+                            { label: 'Serverstandort', value: 'EU wählbar' },
+                            { label: 'DSGVO-konform', value: 'Vollständig' },
+                            { label: 'Regierungszugriff', value: 'Unwahrscheinlich' },
+                            { label: 'Open Source', value: 'Ja' },
+                            { label: 'Preis', value: 'ab 0 €', class: 'price-value' }
+                        ]
+                    }
+                ],
+                additional: [
+                    {
+                        type: 'us',
+                        name: 'Microsoft Teams',
+                        badge: 'USA',
+                        category: 'video',
+                        features: [
+                            { label: 'Serverstandort', value: 'USA/Global' },
+                            { label: 'DSGVO-konform', value: 'Begrenzt' },
+                            { label: 'Regierungszugriff', value: 'Sehr wahrscheinlich' },
+                            { label: 'Integration', value: 'Office 365' },
+                            { label: 'Preis', value: 'ab 3,70 €', class: 'price-value' }
+                        ]
+                    },
+                    {
+                        type: 'eu',
+                        name: 'BigBlueButton',
+                        badge: 'Deutschland',
+                        category: 'video',
+                        features: [
+                            { label: 'Serverstandort', value: 'Deutschland/EU' },
+                            { label: 'DSGVO-konform', value: 'Vollständig' },
+                            { label: 'Regierungszugriff', value: 'Unwahrscheinlich' },
+                            { label: 'Open Source', value: 'Ja' },
+                            { label: 'Preis', value: 'ab 0 €', class: 'price-value' }
+                        ]
+                    }
+                ]
+            }
+        };
+
+        // State
+        let currentCategory = 'all';
+        let currentView = 'category';
+        let showingAdditional = false;
+        let allProvidersArray = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        function initializeApp() {
+            // Populate all providers array
+            populateAllProviders();
+            
+            // Setup
+            renderProviders(currentCategory);
+            setupEventListeners();
+            setupIntersectionObserver();
+            setupNavbarScroll();
+            
+            // Generate only 5 particles for better performance
+            generateParticles(5);
+            
+            // Trigger hero animation
+            setTimeout(() => {
+                document.getElementById('hero').classList.add('loaded');
+            }, 100);
+        }
+
+        function populateAllProviders() {
+            allProvidersArray = [];
+            Object.keys(providers).forEach(category => {
+                allProvidersArray.push(...providers[category].default);
+                if (providers[category].additional) {
+                    allProvidersArray.push(...providers[category].additional);
+                }
+            });
+        }
+
+        function setupEventListeners() {
+            // Category buttons
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    handleCategoryClick(this.dataset.category);
+                });
+            });
+
+            // View toggle
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    handleViewToggle(this.dataset.view);
+                });
+            });
+
+            // Show more button
+            const showMoreBtn = document.getElementById('show-more-btn');
+            if (showMoreBtn) {
+                showMoreBtn.addEventListener('click', toggleAdditional);
+            }
+
+            // Search
+            document.getElementById('provider-search').addEventListener('input', handleSearch);
+
+            // Contact form
+            document.getElementById('contact-form').addEventListener('submit', handleContactSubmit);
+
+            // Modal backdrop click
+            document.getElementById('contact-modal').addEventListener('click', function(e) {
+                if (e.target === this) closeContactModal();
+            });
+        }
+
+        function handleCategoryClick(category) {
+            currentCategory = category;
+            showingAdditional = false;
+            
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.category === category);
+            });
+            
+            if (currentView === 'all') {
+                filterAllProviders(category);
+            } else {
+                renderProviders(category);
+            }
+        }
+
+        function handleViewToggle(view) {
+            currentView = view;
+            
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.view === view);
+            });
+            
+            const providersGrid = document.getElementById('providers-grid');
+            const allProvidersGrid = document.getElementById('all-providers-grid');
+            const showMoreBtn = document.getElementById('show-more-btn');
+            const filterHeader = document.getElementById('filter-header');
+            
+            if (view === 'all') {
+                providersGrid.style.display = 'none';
+                allProvidersGrid.classList.add('active');
+                showMoreBtn.classList.add('hidden');
+                filterHeader.classList.remove('hidden');
+                renderAllProviders();
+            } else {
+                providersGrid.style.display = 'grid';
+                allProvidersGrid.classList.remove('active');
+                filterHeader.classList.add('hidden');
+                renderProviders(currentCategory);
+            }
+        }
+
+        function renderProviders(category, showAll = false) {
+            const grid = document.getElementById('providers-grid');
+            const showMoreBtn = document.getElementById('show-more-btn');
+            
+            let toShow = [];
+            
+            if (category === 'all') {
+                // Show default providers from all categories
+                Object.keys(providers).forEach(cat => {
+                    toShow.push(...providers[cat].default);
+                });
+            } else {
+                const categoryData = providers[category];
+                if (!categoryData) return;
+                
+                toShow = showAll ? 
+                    [...categoryData.default, ...(categoryData.additional || [])] : 
+                    categoryData.default;
+            }
+            
+            grid.innerHTML = toShow.map(provider => createProviderCard(provider)).join('');
+            
+            // Show/hide the "show more" button
+            if (category !== 'all' && providers[category]?.additional?.length > 0) {
+                showMoreBtn.classList.remove('hidden');
+                showMoreBtn.textContent = showAll ? 'Weniger anzeigen' : 'Weitere anzeigen';
+            } else {
+                showMoreBtn.classList.add('hidden');
+            }
+            
+            // Animate cards with stagger
+            animateCards();
+        }
+
+        function renderAllProviders() {
+            const grid = document.getElementById('all-providers-grid');
+            const filterStats = document.getElementById('filter-stats');
+            
+            let filtered = currentCategory === 'all' ? 
+                allProvidersArray : 
+                allProvidersArray.filter(p => p.category === currentCategory);
+            
+            grid.innerHTML = filtered.map(provider => createProviderCard(provider)).join('');
+            filterStats.textContent = `${filtered.length} Anbieter gefunden`;
+            
+            // Animate cards
+            setTimeout(() => {
+                grid.querySelectorAll('.provider-card').forEach((card, index) => {
+                    setTimeout(() => card.classList.add('visible'), index * 50);
+                });
+            }, 50);
+        }
+
+        function filterAllProviders(category) {
+            const grid = document.getElementById('all-providers-grid');
+            const filterStats = document.getElementById('filter-stats');
+            
+            let filtered = category === 'all' ? 
+                allProvidersArray : 
+                allProvidersArray.filter(p => p.category === category);
+            
+            grid.innerHTML = filtered.map(provider => createProviderCard(provider)).join('');
+            filterStats.textContent = `${filtered.length} Anbieter gefunden`;
+            
+            // Animate cards
+            setTimeout(() => {
+                grid.querySelectorAll('.provider-card').forEach((card, index) => {
+                    setTimeout(() => card.classList.add('visible'), index * 50);
+                });
+            }, 50);
+        }
+
+        function createProviderCard(provider) {
+            const badgeClass = 'provider-badge';
+            
+            return `
+                <div class="provider-card ${provider.type}" data-category="${provider.category}">
+                    <div class="provider-header">
+                        <h3 class="provider-name">${provider.name}</h3>
+                        <span class="${badgeClass}">${provider.badge}</span>
+                    </div>
+                    <ul class="provider-features">
+                        ${provider.features.map(feature => `
+                            <li>
+                                <span class="feature-label">${feature.label}</span>
+                                <span class="feature-value ${feature.class || ''}">${feature.value}</span>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        function animateCards() {
+            setTimeout(() => {
+                document.querySelectorAll('.providers-grid .provider-card').forEach((card, index) => {
+                    setTimeout(() => card.classList.add('visible'), index * 100);
+                });
+            }, 50);
+        }
+
+        function toggleAdditional() {
+            showingAdditional = !showingAdditional;
+            renderProviders(currentCategory, showingAdditional);
+        }
+
+        function handleSearch(e) {
+            const searchTerm = e.target.value.toLowerCase().trim();
+            
+            if (!searchTerm) {
+                if (currentView === 'all') {
+                    renderAllProviders();
+                } else {
+                    renderProviders(currentCategory, showingAdditional);
+                }
+                return;
+            }
+            
+            const filtered = allProvidersArray.filter(p => 
+                p.name.toLowerCase().includes(searchTerm)
+            );
+            
+            const grid = currentView === 'all' ? 
+                document.getElementById('all-providers-grid') : 
+                document.getElementById('providers-grid');
+            
+            if (filtered.length > 0) {
+                grid.innerHTML = filtered.map(p => createProviderCard(p)).join('');
+                
+                if (currentView === 'all') {
+                    document.getElementById('filter-stats').textContent = `${filtered.length} Anbieter gefunden`;
+                } else {
+                    document.getElementById('show-more-btn').classList.add('hidden');
+                }
+                
+                setTimeout(() => {
+                    grid.querySelectorAll('.provider-card').forEach(card => {
+                        card.classList.add('visible');
+                    });
+                }, 50);
+            } else {
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 60px; color: var(--text-secondary);">Keine Ergebnisse gefunden</div>';
+            }
+        }
+
+        function checkOffers() {
+            const button = event.currentTarget;
+            button.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                button.style.transform = '';
+                alert('Vielen Dank für Ihr Interesse! Wir prüfen die besten Wechselangebote für Sie und melden uns in Kürze.');
+            }, 150);
+        }
+
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function openContactModal() {
+            const modal = document.getElementById('contact-modal');
+            modal.classList.add('visible');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeContactModal() {
+            const modal = document.getElementById('contact-modal');
+            modal.classList.remove('visible');
+            document.body.style.overflow = '';
+        }
+
+        function handleContactSubmit(e) {
+            e.preventDefault();
+            alert('Vielen Dank für Ihre Nachricht! Wir melden uns innerhalb von 24 Stunden bei Ihnen.');
+            closeContactModal();
+            e.target.reset();
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const toggle = document.querySelector('.theme-toggle');
+            toggle.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+        }
+
+        // Intersection Observer for scroll animations
+        function setupIntersectionObserver() {
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -100px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('in-view');
+                        
+                        // Stagger animations for child elements
+                        const staggerElements = entry.target.querySelectorAll('.stagger-animation');
+                        staggerElements.forEach((el, index) => {
+                            setTimeout(() => {
+                                el.classList.add('visible');
+                            }, index * 150);
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            // Observe sections
+            document.querySelectorAll('.section').forEach(section => {
+                observer.observe(section);
+            });
+
+            // Observe cards
+            document.querySelectorAll('.benefit-card, .step-card').forEach(card => {
+                observer.observe(card);
+            });
+        }
+
+        // Navbar scroll effect
+        function setupNavbarScroll() {
+            const navbar = document.getElementById('navbar');
+            let lastScroll = 0;
+            
+            window.addEventListener('scroll', () => {
+                const currentScroll = window.scrollY;
+                
+                if (currentScroll > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+                
+                // Hide/show scroll indicator
+                const scrollIndicator = document.querySelector('.scroll-indicator');
+                if (scrollIndicator) {
+                    if (currentScroll > 100) {
+                        scrollIndicator.style.opacity = '0';
+                        scrollIndicator.style.pointerEvents = 'none';
+                    } else {
+                        scrollIndicator.style.opacity = '1';
+                        scrollIndicator.style.pointerEvents = 'auto';
+                    }
+                }
+                
+                lastScroll = currentScroll;
+            });
+        }
+
+        // Generate floating particles - Optimized
+        function generateParticles(count) {
+            const hero = document.querySelector('.hero');
+            
+            for (let i = 5; i < count + 5; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                particle.style.width = (2 + Math.random() * 4) + 'px';
+                particle.style.height = particle.style.width;
+                hero.appendChild(particle);
+            }
+        }
+    </script>
+</body>
+</html>
